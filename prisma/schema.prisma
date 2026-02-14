@@ -1,0 +1,37 @@
+generator client {
+  provider = "prisma-client"
+  
+  output="../generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  createdAt DateTime @default(now())
+  budgets   Budget[]
+}
+
+model Budget {
+  id           String        @id @default(uuid())
+  name         String
+  amount       Float
+  userId       String
+  emoji        String?
+  createdAt    DateTime      @default(now())
+  user         User          @relation(fields: [userId], references: [id])
+  transactions Transaction[]
+}
+
+model Transaction {
+  id          String   @id @default(uuid())
+  description String
+  amount      Float
+  budgetId    String?
+  emoji       String?
+  createdAt   DateTime @default(now())
+  budget      Budget?  @relation(fields: [budgetId], references: [id])
+}
