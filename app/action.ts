@@ -23,7 +23,7 @@ console.log("utilisateur deja present dans la base de donnees")
         console.error("Erreur lors de la verification de l utilisateur",error);
     }
 }
-export async function addBudjets(email:string,name:string,amount:number,selectedEmodji:string){
+export async function addBudjets(email:string,name:string,amount:number,selectedEmoji:string){
     try{
 const user= await prisma.user.findUnique({
     where:{email}
@@ -34,14 +34,36 @@ if(!user){
 await prisma.budget.create({
     data:{
         name,
-        amount ,
-       
-        emodji:selectedEmodji,
+        amount,
+        emoji:selectedEmoji,
         userId:user.id
     }
 })
     }catch(error){
         console.log("error lors de l ajout du budjet:",error)
         throw error
+    }
+}
+export async function getBudgetByUser(email:string){
+    try{
+const user=await prisma.user.findUnique({
+    where:{
+        email
+    },
+    include:{
+        budgets:{
+            include:{
+                transactions:true
+            }
+        }
+    }
+})
+if(!user){
+    throw new Error("utilisateur non trouve")
+}
+return user.budgets
+    }catch(error){
+        console.error("erreur lors de la recuperation des budgets:", error);
+        throw error;
     }
 }
