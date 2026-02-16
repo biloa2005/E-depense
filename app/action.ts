@@ -1,5 +1,6 @@
 'use server'
 import {prisma} from "@/lib/prisma"
+
 export async function checkAndAddUser(email:string | undefined){
     if(!email) return
     try{
@@ -66,4 +67,68 @@ return user.budgets
         console.error("erreur lors de la recuperation des budgets:", error);
         throw error;
     }
+}
+export async function getTransactionByBudgetId(budgetId:string){
+    try{
+const budget= await prisma.budget.findUnique({
+    where:{
+        id:budgetId
+    },
+    include:{
+        transactions:true
+    }
+})
+  if(!budget){
+    throw new Error("budget non trouvé.")
+  }
+  return budget
+    }catch(error){
+        console.error("Erreur lors de la recuperation des transaction:",error);
+        throw error;
+    }
+}
+export async function getTransactionToBudgetId(
+    budgetId:string,
+    amount:number,
+    description:string
+){
+    try{
+          const budget= await prisma.budget.findUnique({
+            where: {
+                id:budgetId
+            },
+            include:{
+                transactions:true
+            }
+          })
+          if(!budget){
+            throw new Error('Budget non trouvé');
+        }
+            const totalTransactions= budget.transactions.reduce((sum,transaction)=>{ 
+                return sum + transaction.amount},0)
+ 
+                     const totalWithNewTransaction= totalTransactions+ amount
+                     if(totalTransactions>budget.amount){
+                        throw new Error("Le montant total des transactions depasse le montant du budget.");
+
+                     }
+                     const newtransaction= await prisma.transaction.create({
+                        data:{
+                            amount,
+                            description,
+                            emoji:budget.emoji,
+                            budget:{
+                                connect:{
+                                    id:budget.id
+                                }
+                            }
+                        }
+                     })
+          
+    }catch(error){
+              console.error("Erreur lors de la recuperation des transaction:",error);
+        throw error;
+
+    }
+
 }

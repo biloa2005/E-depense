@@ -1,6 +1,8 @@
 import { UserButton } from "@clerk/nextjs";
 import Image from "next/image";
 import Navbar from "./components/Navbar";
+import BudgetItem from "./components/BudgetItem";
+import budgets from "./data";
 
 
 import Link from "next/link";
@@ -19,7 +21,7 @@ export default function Home() {
               Suivez vos budgets et vos dépenses <br /> en toute simplicité avec
               notre application intuitive !
             </p>
-            <div className="flex justify-center items-center">
+            <div className="flex justify-center items-center mb-10">
               <Link href={"/sign-in"}
               className="btn btn-sm md:btn-md btn-outline btn-accent"
               >Se connecter</Link>
@@ -27,6 +29,19 @@ export default function Home() {
               className="btn btn-sm md:btn-md ml-2 btn-accent"
               >S'inscrire</Link>
             </div>
+             <ul className=" grid grid-cols-1 md:grid-cols-3 gap-4 md:min-w-[1200px] ">
+              {
+                budgets.map((budget)=>(
+                  <Link href={"/S"} key={budget.id}>
+                    <BudgetItem budget={budget}
+                    enableHover={1}
+                    >
+
+                    </BudgetItem>
+                    </Link>
+                ))
+              }
+         </ul>
   </div>
 </div>
       </div>

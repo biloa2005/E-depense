@@ -10,6 +10,7 @@ import {Budget} from "@/type"
 import Link from 'next/link';
 import BudgetItem from "../components/BudgetItem";
 import { Landmark } from "lucide-react";
+import { BudgetScalarFieldEnum } from "@/generated/prisma/internal/prismaNamespace";
 const page = () => {
   const { user } = useUser();
   const [budgetName, setBudjetName] = useState<string>("");
@@ -64,6 +65,7 @@ setbudgets(userBudgets)
 useEffect(()=>{
   fetchBudgets()
 },[user?.primaryEmailAddress?.emailAddress])
+
 
   return (
     <Wrapper>
@@ -132,7 +134,7 @@ useEffect(()=>{
          <ul className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {
                 budgets.map((budget)=>(
-                  <Link href={"/S"} key={budget.id}>
+                  <Link href={`/manag/${budget.id}`} key={budget.id}>
                     <BudgetItem budget={budget}
                     enableHover={1}
                     >
