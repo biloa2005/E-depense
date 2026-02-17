@@ -87,48 +87,114 @@ const budget= await prisma.budget.findUnique({
         throw error;
     }
 }
-export async function getTransactionToBudgetId(
-    budgetId:string,
-    amount:number,
-    description:string
-){
-    try{
-          const budget= await prisma.budget.findUnique({
+export async function getTrasactionsByBudgetId(budgetId: string) {
+    try {
+        const budget = await prisma.budget.findUnique({
             where: {
-                id:budgetId
+                id: budgetId
             },
-            include:{
-                transactions:true
+            include: {
+                transactions: true
             }
-          })
-          if(!budget){
-            throw new Error('Budget non trouvé');
+        })
+        if (!budget) {
+            throw new Error('Budget non trouvé.');
         }
-            const totalTransactions= budget.transactions.reduce((sum,transaction)=>{ 
-                return sum + transaction.amount},0)
- 
-                     const totalWithNewTransaction= totalTransactions+ amount
-                     if(totalTransactions>budget.amount){
-                        throw new Error("Le montant total des transactions depasse le montant du budget.");
 
-                     }
-                     const newtransaction= await prisma.transaction.create({
-                        data:{
-                            amount,
-                            description,
-                            emoji:budget.emoji,
-                            budget:{
-                                connect:{
-                                    id:budget.id
-                                }
-                            }
-                        }
-                     })
-          
-    }catch(error){
-              console.error("Erreur lors de la recuperation des transaction:",error);
+        return budget;
+    } catch (error) {
+        console.error('Erreur lors de la récupération des transactions:', error);
         throw error;
-
     }
+}
 
+
+export async function addTransactionToBudget(
+    budgetId: string,
+    amount: number,
+    description: string
+
+) {
+
+    try {
+
+        const budget = await prisma.budget.findUnique({
+            where: {
+                id: budgetId
+            },
+            include: {
+                transactions: true
+            }
+        })
+
+        if (!budget) {
+            throw new Error('Budget non trouvé.');
+        }
+
+        const totalTransactions = budget.transactions.reduce((sum, transaction) => {
+            return sum + transaction.amount
+        }, 0)
+
+        const totalWithNewTransaction = totalTransactions + amount
+
+        if (totalWithNewTransaction > budget.amount) {
+            throw new Error('Le montant total des transactions dépasse le montant du budget.');
+        }
+
+        const newTransaction = await prisma.transaction.create({
+            data: {
+                amount,
+                description,
+                emoji: budget.emoji,
+                budget: {
+                    connect: {
+                        id: budget.id
+                    }
+                }
+            }
+        })
+
+    } catch (error) {
+        console.error('Erreur lors de l\'ajout de la transaction:', error);
+        throw error;
+    }
+}
+
+export const  deleteBudget= async (budgetId: string)=>{
+    try{
+await prisma.transaction.deleteMany({
+    where:{budgetId}
+
+})
+await prisma.budget.delete({
+    where:{
+        id:budgetId
+    }
+})
+    }catch(error){
+        console.error("Erreur lors de la supression du budget et de ces transaction associer", error)
+throw error;
+    }
+}
+export async function deletTransaction(transactionId: string){
+     try{
+        const transaction=await prisma.transaction.findUnique({
+                    where:{
+                        id:transactionId
+                    }
+        })
+        if(!transaction){
+            throw new Error("transaction non trouver.");
+        }
+        await prisma.transaction.delete({
+            where:{
+                id:transactionId,
+            },
+        })
+
+
+    }catch(error){
+        console.error("Erreur lors de la supression des transaction ", error)
+throw error;
+    }
 }
