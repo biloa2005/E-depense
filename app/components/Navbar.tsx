@@ -27,7 +27,7 @@ const Navbar = () => {
                 <Link href={"/budjets"} className="btn ">
                   Mes budjets
                 </Link>
-                <Link href={""} className="btn mx-4">
+                <Link href={"/dashboard"} className="btn mx-4">
                   Tableau de bord
                 </Link>
                 <Link href={"/transactions"} className="btn ">
@@ -40,7 +40,7 @@ const Navbar = () => {
               <Link href={"/budjets"} className="btn btn-sm">
                 Mes budjets
               </Link>
-              <Link href={""} className="btn btn-sm mx-4">
+              <Link href={"/dashboard"} className="btn btn-sm mx-4">
                 Tableau de bord
               </Link>
               <Link href={"/transactions"} className="btn btn-sm">
